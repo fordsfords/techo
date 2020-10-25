@@ -20,6 +20,7 @@ is https://github.com/fordsfords/pgen
 To contact me, Steve Ford, project owner, you can find my email address
 at http://geeky-boy.com.  Can't see it?  Keep looking.
 
+
 ## Introduction
 
 Shell scripts are useful tools to write.
@@ -37,13 +38,29 @@ finer time precision is desired to see exact sequences of events.
 The ```techo``` command gives time precision down to the microsecond
 (defaults to millisecond).
 
+
 ## Usage
 
 ````
-techo [-n] [-p precision] [message]
+Usage: techo [-h] [-d] [-n] [-p precision] [message ...]
+where:
+-h - print help
+-d - include date
+-n - newline omit from output
+-p precision - number of decimal digits for seconds (0-6, default to 3).
+message - zero or more text strings to be printed.
 ````
 
-Where:
 
-* -n - do not include newline in output
-* -p precision - number of decimal digits (default to 3).
+## Examples
+
+````
+bash-3.2$ ./techo
+13:39:58.629
+bash-3.2$ ./techo -d
+2020-09-25 13:40:28.671
+bash-3.2$ ./techo -p 3 Hello
+13:41:24.574 Hello
+bash-3.2$ ./techo -n goodby
+13:41:52.712 goodbybash-3.2$
+````

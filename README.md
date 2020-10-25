@@ -39,6 +39,33 @@ The ```techo``` command gives time precision down to the microsecond
 (defaults to millisecond).
 
 
+## Why not date "+%N"?
+
+The GNU date command supports the "%N" formatting directive which
+includes nanoseconds.
+
+However, not all Unixes use a recent GNU "date" command.
+In particular, MacOS does not support "%N" out of the box.
+(And yes, that can be fixed with homebrew, but I didn't want dependencies.)
+
+Also, the date command doesn't support suppressing the trailing newline,
+which can be handy sometimes.
+
+Also, it requires a bunch of extra scripting to specify the precision,
+and typically requires using bash-specific constucts for the arithmetic.
+
+Also, it leads to more concise lines. This:
+````
+techo "Hello"
+````
+is more readable than:
+````
+echo `date +"%H:%M:%S.%N"` "Hello"
+````
+
+Finally, programming is my hobby and writing this was a fun diversion.
+
+
 ## Usage
 
 ````

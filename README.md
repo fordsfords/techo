@@ -51,16 +51,20 @@ where:
 message - zero or more text strings to be printed.
 ````
 
+Note, the times printed are truncated, not rounded.
+I.e. if the timestamp sampled ends with ".1995" and is printed with "-p 1",
+it will print as ".1"
+
 
 ## Examples
 
 ````
 bash-3.2$ ./techo
 13:39:58.629
-bash-3.2$ ./techo -d
-2020-09-25 13:40:28.671
-bash-3.2$ ./techo -p 3 Hello
-13:41:24.574 Hello
-bash-3.2$ ./techo -n goodby
+bash-3.2$ ./techo -d -p 0  # include date, second precision
+2020-09-25 13:40:28
+bash-3.2$ ./techo -p 6 Hello  # include message, microsecond precision
+13:41:24.574298 Hello
+bash-3.2$ ./techo -n goodby   # Omit newline (system prompt is appended).
 13:41:52.712 goodbybash-3.2$
 ````

@@ -65,7 +65,7 @@ bash-3.2$ ./techo -d -p 0  # include date, second precision
 2020-09-25 13:40:28
 bash-3.2$ ./techo -p 6 Hello  # include message, microsecond precision
 13:41:24.574298 Hello
-bash-3.2$ ./techo -n goodby   # Omit newline (system prompt is appended).
+bash-3.2$ ./techo -n goodby   # Newline omit (system prompt is appended).
 13:41:52.712 goodbybash-3.2$
 ````
 

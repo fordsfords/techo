@@ -39,7 +39,7 @@ The ```techo``` command gives time precision down to the microsecond
 (defaults to millisecond).
 
 
-## Why not date "+%N"?
+## Why not date +"%N"?
 
 The GNU date command supports the "%N" formatting directive which
 includes nanoseconds.

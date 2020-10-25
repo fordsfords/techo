@@ -68,3 +68,15 @@ bash-3.2$ ./techo -p 6 Hello  # include message, microsecond precision
 bash-3.2$ ./techo -n goodby   # Omit newline (system prompt is appended).
 13:41:52.712 goodbybash-3.2$
 ````
+
+
+## Building
+
+This is a very simple program with no dependencies.
+It should build fine on any Unix with just:
+
+````
+gcc -o techo techo.c
+````
+
+Let me know if you encounter a Unix that doesn't like this.

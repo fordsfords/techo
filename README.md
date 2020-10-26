@@ -25,7 +25,7 @@ at http://geeky-boy.com.  Can't see it?  Keep looking.
 
 Shell scripts are useful tools to write.
 For things like test scripts, logging can be important,
-and those logs should hae time stamps.
+and those logs should have time stamps.
 Typicaly this is done like this:
 
 ````

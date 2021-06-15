@@ -1,3 +1,10 @@
+# Scratch files
+x
+x.*
+*.x
+*.tmp
+*.tmp[0-9]
+
 # Executable
 techo
 

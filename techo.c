@@ -17,34 +17,71 @@
 #include <sys/time.h>
 #include <errno.h>
 
-
-/* See https://blog.geeky-boy.com/2014/04/strtoul-preferred-over-atoi.html */
-#define SAFE_ATOL(a_,l_) do { \
-  char *in_a_ = a_;  char *temp_ = NULL;  long result_; \
+/* See https://github.com/fordsfords/safe_atoi */
+#define SAFE_ATOI(a_,l_) do { \
+  unsigned long long fs_[9] = { \
+    0, 0xff, 0xffff, 0, 0xffffffff, 0, 0, 0, 0xffffffffffffffff }; \
   errno = 0; \
-  if (strlen(in_a_) > 2 && *in_a_ == '0' && *(in_a_ + 1) == 'x') \
-    result_ = strtol(in_a_ + 2, &temp_, 16); \
-  else \
-    result_ = strtol(in_a_, &temp_, 10); \
-  if (errno != 0 || temp_ == in_a_ || temp_ == NULL || *temp_ != '\0') { \
-    fprintf(stderr, "%s:%d, Error, invalid numeric value for %s: '%s'\n", \
-       __FILE__, __LINE__, #l_, in_a_); \
-    usage(NULL); \
+  (l_) = fs_[sizeof(l_)]; \
+  if ((l_) < 0) { /* Is result a signed value? */ \
+    char *in_a_ = a_;  char *temp_ = NULL;  long long llresult_; \
+    if (strlen(in_a_) > 2 && *in_a_ == '0' && *(in_a_ + 1) == 'x') { \
+      llresult_ = strtoll(in_a_ + 2, &temp_, 16); \
+    } else { \
+      llresult_ = strtoll(in_a_, &temp_, 10); \
+    } \
+    if (errno != 0 || temp_ == in_a_ || temp_ == NULL || *temp_ != '\0') { \
+      if (errno == 0) { \
+        errno = EINVAL; \
+      } \
+      fprintf(stderr, "%s:%d, Error, invalid number for %s: '%s'\n", \
+         __FILE__, __LINE__, #l_, in_a_); \
+    } else { /* strtol thinks success; check for overflow. */ \
+      (l_) = llresult_; /* "return" value of macro */ \
+      if ((l_) != llresult_) { \
+        fprintf(stderr, "%s:%d, %s over/under flow: '%s'\n", \
+           __FILE__, __LINE__, #l_, in_a_); \
+        errno = ERANGE; \
+      } \
+    } \
+  } else { \
+    char *in_a_ = a_;  char *temp_ = NULL;  unsigned long long llresult_; \
+    if (strlen(in_a_) > 2 && *in_a_ == '0' && *(in_a_ + 1) == 'x') { \
+      llresult_ = strtoull(in_a_ + 2, &temp_, 16); \
+    } else { \
+      llresult_ = strtoull(in_a_, &temp_, 10); \
+    } \
+    if (errno != 0 || temp_ == in_a_ || temp_ == NULL || *temp_ != '\0') { \
+      if (errno == 0) { \
+        errno = EINVAL; \
+      } \
+      fprintf(stderr, "%s:%d, Error, invalid number for %s: '%s'\n", \
+         __FILE__, __LINE__, #l_, in_a_); \
+    } else { /* strtol thinks success; check for overflow. */ \
+      (l_) = llresult_; /* "return" value of macro */ \
+      if ((l_) != llresult_) { \
+        fprintf(stderr, "%s:%d, %s over/under flow: '%s'\n", \
+           __FILE__, __LINE__, #l_, in_a_); \
+        errno = ERANGE; \
+      } \
+    } \
   } \
-  l_ = result_; /* "return" value of macro */ \
 } while (0)
 
-
 /* Options */
-int o_date         = 0;  /* -d */
+int o_human = 0;  /* -H */
+int o_date = 0;  /* -d */
+unsigned long long o_delta_start = -1;  /* -D */
 int o_newline_omit = 0;  /* -n */
-int o_precision    = 3;  /* -p precision */
+int o_precision = 3;  /* -p */
+unsigned long long o_test_end = -1;  /* -T */
 
 
-int pow_10[7] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
+/* Globals */
+unsigned long long pow_10[7] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
 
 
-char usage_str[] = "Usage: techo [-h] [-d] [-n] [-p precision] [message ...]";
+char usage_str[] = "Usage: techo [-h] [-d] [-D start] [-n] [-p precision] [-T end] [message ...]";
 void usage(char *msg) {
   if (msg) fprintf(stderr, "\n%s\n\n", msg);
   fprintf(stderr, "%s\n", usage_str);
@@ -52,35 +89,49 @@ void usage(char *msg) {
 }  /* usage */
 
 void help() {
-  fprintf(stderr, "%s\n"
+  printf("%s\n"
     "where:\n"
-    "-h - print help\n"
-    "-d - include date\n"
-    "-n - newline omit from output\n"
-    "-p precision - number of decimal digits for seconds (0-6, default to 3).\n"
-    "message - zero or more text strings to be printed.\n",
+    "  -h - print help\n"
+    "  -H - human-readable output\n"
+    "  -d - include date\n"
+    "  -D start - delta mode; microseconds since 'start'\n"
+    "  -n - newline omit from output\n"
+    "  -p precision - number of decimal digits for seconds (0-6, default=3).\n"
+    "  -T end - for testing purposes\n"
+    "  message - zero or more text strings to be printed.\n"
+    "For details, see https://github.com/fordsfords/techo\n",
     usage_str);
   exit(0);
 }  /* help */
+
 
 void parse_cmdline(int argc, char **argv)
 {
   int opt;
 
-  while ((opt = getopt(argc, argv, "hdnp:")) != EOF) {
+  while ((opt = getopt(argc, argv, "hHdD:np:T:")) != EOF) {
     switch (opt) {
       case 'h':
         help();
         break;
+      case 'H':
+        o_human = 1;
+        break;
       case 'd':
         o_date = 1;
+        break;
+      case 'D':
+        SAFE_ATOI(optarg, o_delta_start);
         break;
       case 'n':
         o_newline_omit = 1;
         break;
       case 'p':
-        SAFE_ATOL(optarg, o_precision);
+        SAFE_ATOI(optarg, o_precision);
         if (o_precision < 0 || o_precision > 6) usage("precision must be 0-6");
+        break;
+      case 'T':
+        SAFE_ATOI(optarg, o_test_end);
         break;
       default:
         usage(NULL);
@@ -89,7 +140,7 @@ void parse_cmdline(int argc, char **argv)
 }  /* parse_cmdline */
 
 
-void t()
+void print_time()
 {
   struct timeval cur_time_tv;
   struct tm tm_buf;
@@ -113,11 +164,76 @@ void t()
 }
 
 
+#define USEC_PER_SEC 1000000ull
+#define USEC_PER_MIN (USEC_PER_SEC * 60ull)
+#define USEC_PER_HR (USEC_PER_MIN * 60ull)
+#define USEC_PER_DAY (USEC_PER_HR * 24ull)
+#define USEC_PER_MO (USEC_PER_YR / 12ull)
+#define USEC_PER_YR (USEC_PER_DAY * 365ull)
+
+void print_delta()
+{
+  struct timeval cur_time_tv;
+  unsigned long long delta_us;
+
+  gettimeofday(&cur_time_tv, NULL);
+  delta_us = cur_time_tv.tv_sec;
+  delta_us *= USEC_PER_SEC;
+  delta_us += cur_time_tv.tv_usec;
+
+  if (o_test_end != -1) {
+    /* For testing purposes. */
+    delta_us = o_test_end;
+  }
+
+  delta_us -= o_delta_start;
+
+  if (o_human) {
+    if (delta_us < USEC_PER_MIN) {
+      /* Display in sec. */
+      float f_sec = (float)delta_us / (float)USEC_PER_SEC;
+      printf("%.03f sec", f_sec);
+    }
+    else if (delta_us < USEC_PER_HR) {
+      /* Display in minutes. */
+      float f_min = (float)delta_us / (float)USEC_PER_MIN;
+      printf("%.03f min", f_min);
+    }
+    else if (delta_us < USEC_PER_DAY) {
+      /* Display in hours. */
+      float f_hr = (float)delta_us / (float)USEC_PER_HR;
+      printf("%.03f hr", f_hr);
+    }
+    else if (delta_us < USEC_PER_MO) {
+      /* Display in days. */
+      float f_day = (float)delta_us / (float)USEC_PER_DAY;
+      printf("%.03f day", f_day);
+    }
+    else if (delta_us < USEC_PER_YR) {
+      /* Display in months. */
+      float f_mo = (float)delta_us / (float)USEC_PER_MO;
+      printf("%.03f mo", f_mo);
+    }
+    else {
+      /* Display in years. */
+      float f_yr = (float)delta_us / (float)USEC_PER_YR;
+      printf("%.03f yr", f_yr);
+    }
+  } else {  /* not o_human */
+    printf("%llu", delta_us);
+  }
+}
+
+
 int main(int argc, char **argv)
 {
   parse_cmdline(argc, argv);
 
-  t();
+  if (o_delta_start != -1) {
+    print_delta();
+  } else {
+    print_time();
+  }
 
   while (optind < argc) {
     printf(" %s", argv[optind]);

@@ -1,5 +1,6 @@
 # techo
 Echo-like command with high-precision timestamp.
+Also calculates time differences.
 Intended for shell script logging.
 
 ## License
@@ -8,7 +9,7 @@ I want there to be NO barriers to using this code, so I am releasing it to the p
 
 Copyright 2020 Steven Ford http://geeky-boy.com and licensed
 "public domain" style under
-[CC0](http://creativecommons.org/publicdomain/zero/1.0/): 
+[CC0](http://creativecommons.org/publicdomain/zero/1.0/):
 ![CC0](https://licensebuttons.net/p/zero/1.0/88x31.png "CC0")
 
 To the extent possible under law, the contributors to this project have
@@ -42,35 +43,79 @@ The ```techo``` command gives time precision down to the microsecond
 ## Usage
 
 ````
-Usage: techo [-h] [-d] [-n] [-p precision] [message ...]
+Usage: techo [-h] [-d] [-D start] [-n] [-p precision] [-T end] [message ...]
 where:
--h - print help
--d - include date
--n - newline omit from output
--p precision - number of decimal digits for seconds (0-6, default to 3).
-message - zero or more text strings to be printed.
+  -h - print help
+  -H - human-readable output
+  -d - include date
+  -D start - delta mode; microseconds since 'start'
+  -n - newline omit from output
+  -p precision - number of decimal digits for seconds (0-6, default=3).
+  -T end - for testing purposes
+  message - zero or more text strings to be printed.
+For details, see https://github.com/fordsfords/techo
 ````
+
+There are two modes of operation: regular and delta.
+The tool defaults to regular mode, in which case it prints a
+regular timestamp.
+The "-D start" option turns on delta mode,
+which is used to measure time durations between two points.
+
+The "-T end" option is only used for testing the program (see "tst.sh").
 
 Note, the times printed are truncated, not rounded.
-I.e. if the timestamp sampled ends with ".1995" and is printed with "-p 1",
-it will print as ".1"
+I.e. if the timestamp sampled ends with ".1009", it will print as ".100".
 
 
-## Examples
+## Regular Mode
+
+The "-d" and "-p precision" options are for use with regular mode.
 
 ````
-bash-3.2$ ./techo
+$ ./techo
 13:39:58.629
-bash-3.2$ ./techo -d -p 0  # include date, second precision
+$ ./techo -d -p 0  # include date, no decimals.
 2020-09-25 13:40:28
-bash-3.2$ ./techo -p 6 Hello  # include message, microsecond precision
+$ ./techo -p 6 Hello  # include message, microsecond precision
 13:41:24.574298 Hello
-bash-3.2$ ./techo -n goodby   # Newline omit (system prompt is appended).
-13:41:52.712 goodbybash-3.2$
+$ ./techo -n goodby   # Newline omit (system prompt is appended).
+13:41:52.712 goodby$
 ````
 
 
-## Building
+## Delta Mode
+
+The "-D start" option turns on delta mode.
+This mode is used to measure time durations between two points.
+
+For example:
+````
+$ START=`./techo -D 0`
+$ sleep 2
+$ ./techo -D $START
+2012773
+$ echo $START
+1623780027906142
+````
+So the two "techo" commands happened 2,012,773 microseconds apart.
+
+The "-H" option is for use with delta mode.
+Without "-H", it prints microseconds.
+With "-H", it prints an appropriate unit with 3 decimals.
+
+For example:
+````
+$ START=`./techo -D 0`
+$ sleep 2
+$ ./techo -D $START
+2.011 sec
+$ echo $START
+1623780364223472
+````
+
+
+## Building and Testing
 
 This is a very simple program with no dependencies.
 It should build fine on any Unix with just:
@@ -80,6 +125,9 @@ gcc -o techo techo.c
 ````
 
 Let me know if you encounter a Unix that doesn't like this.
+
+There is a "tst.sh" script included that builds it and runs a series of
+self-tests.
 
 
 ## Why not date +"%N"?
@@ -94,7 +142,10 @@ In particular, MacOS does not support "%N" out of the box.
 Also, the date command doesn't support suppressing the trailing newline,
 which can be handy sometimes.
 
-The techo command leads to more concise lines. This:
+Also, delta mode is handy, especially with the "-H" option to print
+human-friendly times.
+
+Also the techo command leads to more concise scripts. This:
 ````
 techo "Hello"
 ````

@@ -36,12 +36,13 @@
       } \
       fprintf(stderr, "%s:%d, Error, invalid number for %s: '%s'\n", \
          __FILE__, __LINE__, #l_, in_a_); \
+      exit(1); \
     } else { /* strtol thinks success; check for overflow. */ \
       (l_) = llresult_; /* "return" value of macro */ \
       if ((l_) != llresult_) { \
         fprintf(stderr, "%s:%d, %s over/under flow: '%s'\n", \
            __FILE__, __LINE__, #l_, in_a_); \
-        errno = ERANGE; \
+        exit(1); \
       } \
     } \
   } else { \
@@ -57,12 +58,13 @@
       } \
       fprintf(stderr, "%s:%d, Error, invalid number for %s: '%s'\n", \
          __FILE__, __LINE__, #l_, in_a_); \
+      exit(1); \
     } else { /* strtol thinks success; check for overflow. */ \
       (l_) = llresult_; /* "return" value of macro */ \
       if ((l_) != llresult_) { \
         fprintf(stderr, "%s:%d, %s over/under flow: '%s'\n", \
            __FILE__, __LINE__, #l_, in_a_); \
-        errno = ERANGE; \
+        exit(1); \
       } \
     } \
   } \

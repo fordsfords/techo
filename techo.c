@@ -83,7 +83,7 @@ unsigned long long o_test_end = -1;  /* -T */
 unsigned long long pow_10[7] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
 
 
-char usage_str[] = "Usage: techo [-h] [-d] [-D start] [-n] [-p precision] [-T end] [message ...]";
+char usage_str[] = "Usage: techo [-h] [-d] [-D start] [-H] [-n] [-p precision] [-T end] [message ...]";
 void usage(char *msg) {
   if (msg) fprintf(stderr, "\n%s\n\n", msg);
   fprintf(stderr, "%s\n", usage_str);
@@ -94,9 +94,9 @@ void help() {
   printf("%s\n"
     "where:\n"
     "  -h - print help\n"
-    "  -H - human-readable output\n"
+    "  -H - human-readable output for delta mode\n"
     "  -d - include date\n"
-    "  -D start - delta mode; microseconds since 'start'\n"
+    "  -D start - delta mode; print microseconds since 'start'\n"
     "  -n - newline omit from output\n"
     "  -p precision - number of decimal digits for seconds (0-6, default=3).\n"
     "  -T end - for testing purposes\n"

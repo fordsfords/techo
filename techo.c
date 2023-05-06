@@ -79,10 +79,6 @@ int o_precision = 3;  /* -p */
 unsigned long long o_test_end = -1;  /* -T */
 
 
-/* Globals */
-unsigned long long pow_10[7] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
-
-
 char usage_str[] = "Usage: techo [-h] [-d] [-D start] [-H] [-n] [-p precision] [-T end] [message ...]";
 void usage(char *msg) {
   if (msg) fprintf(stderr, "\n%s\n\n", msg);
@@ -142,28 +138,49 @@ void parse_cmdline(int argc, char **argv)
 }  /* parse_cmdline */
 
 
-void print_time()
+/* Get date/time stamp (date optional) with up to microsecond precision.
+ * Returns passed-in string pointer for convenience. */
+char *get_timestamp(char *str, int bufsz, int do_date, int precision)
 {
+  static unsigned long long pow_10[7] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
   struct timeval cur_time_tv;
   struct tm tm_buf;
+  char *rtn_str = str;
 
   gettimeofday(&cur_time_tv, NULL);
   localtime_r(&cur_time_tv.tv_sec, &tm_buf);  /* Break down current time. */
 
-  if (o_date) {
-    printf("%04d-%02d-%02d ",
-      (int)tm_buf.tm_year + 1900, (int)tm_buf.tm_mon, (int)tm_buf.tm_mday);
+  if (do_date && precision > 0) {
+    snprintf(str, bufsz, "%04d-%02d-%02d %02d:%02d:%02d.%0*d",
+        (int)tm_buf.tm_year + 1900, (int)tm_buf.tm_mon, (int)tm_buf.tm_mday,
+        (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec,
+        precision, (int)(cur_time_tv.tv_usec / pow_10[6 - o_precision]));
+  }
+  else if (do_date && precision == 0) {
+    snprintf(str, bufsz, "%04d-%02d-%02d %02d:%02d:%02d",
+        (int)tm_buf.tm_year + 1900, (int)tm_buf.tm_mon, (int)tm_buf.tm_mday,
+        (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec);
+  }
+  else if (!do_date && precision > 0) {
+    snprintf(str, bufsz, "%02d:%02d:%02d.%0*d",
+        (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec,
+        precision, (int)(cur_time_tv.tv_usec / pow_10[6 - o_precision]));
+  }
+  else {  /* !do_date && precision==0 */
+    snprintf(str, bufsz, "%02d:%02d:%02d",
+        (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec);
   }
 
-  if (o_precision > 0) {
-    printf("%02d:%02d:%02d.%0*d",
-      (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec,
-      o_precision, (int)(cur_time_tv.tv_usec / pow_10[6 - o_precision]));
-  } else {
-    printf("%02d:%02d:%02d",
-      (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec);
-  }
-}
+  return rtn_str;
+}  /* get_timestamp */
+
+
+void print_time()
+{
+  char timestamp[32];
+
+  printf("%s", get_timestamp(timestamp, sizeof(timestamp), o_date, o_precision));
+}  /* print_time */
 
 
 #define USEC_PER_SEC 1000000ull

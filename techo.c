@@ -152,13 +152,13 @@ char *get_timestamp(char *str, int bufsz, int do_date, int precision)
 
   if (do_date && precision > 0) {
     snprintf(str, bufsz, "%04d-%02d-%02d %02d:%02d:%02d.%0*d",
-        (int)tm_buf.tm_year + 1900, (int)tm_buf.tm_mon, (int)tm_buf.tm_mday,
+        (int)tm_buf.tm_year + 1900, (int)tm_buf.tm_mon + 1, (int)tm_buf.tm_mday,
         (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec,
         precision, (int)(cur_time_tv.tv_usec / pow_10[6 - precision]));
   }
   else if (do_date && precision == 0) {
     snprintf(str, bufsz, "%04d-%02d-%02d %02d:%02d:%02d",
-        (int)tm_buf.tm_year + 1900, (int)tm_buf.tm_mon, (int)tm_buf.tm_mday,
+        (int)tm_buf.tm_year + 1900, (int)tm_buf.tm_mon + 1, (int)tm_buf.tm_mday,
         (int)tm_buf.tm_hour, (int)tm_buf.tm_min, (int)tm_buf.tm_sec);
   }
   else if (!do_date && precision > 0) {

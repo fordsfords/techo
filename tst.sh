@@ -23,6 +23,8 @@ egrep "^Usage" tst.x >/dev/null ; ASSRT "$? -eq 0"
 ./techo -d -n >tst.x ; ASSRT "$? -eq 0"
 # Since no newline, wc should report 0 lines but 2 words.
 wc tst.x | egrep "^  *0  *2 " >/dev/null ; ASSRT "$? -eq 0"
+D=`date +%Y-%m-%d`
+egrep "^$D" tst.x >/dev/null; ASSRT "$? -eq 0"
 
 ./techo >tst.x ; ASSRT "$? -eq 0"
 # Since has newline, wc should report 1 line, 1 word.

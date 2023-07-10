@@ -3,6 +3,18 @@ Echo-like command with high-precision timestamp.
 Also calculates time differences.
 Intended for shell script logging.
 
+<!-- mdtoc-start -->
+&DoubleRightArrow; [techo](#techo)  
+&nbsp;&nbsp;&DoubleRightArrow; [License](#license)  
+&nbsp;&nbsp;&DoubleRightArrow; [Introduction](#introduction)  
+&nbsp;&nbsp;&DoubleRightArrow; [Usage](#usage)  
+&nbsp;&nbsp;&DoubleRightArrow; [Regular Mode](#regular-mode)  
+&nbsp;&nbsp;&DoubleRightArrow; [Delta Mode](#delta-mode)  
+&nbsp;&nbsp;&DoubleRightArrow; [Building and Testing](#building-and-testing)  
+&nbsp;&nbsp;&DoubleRightArrow; [Why not date +"%N"?](#why-not-date-n)  
+<!-- TOC created by '../mdtoc/mdtoc.pl README.md' (see https://github.com/fordsfords/mdtoc) -->
+<!-- mdtoc-end -->
+
 ## License
 
 I want there to be NO barriers to using this code, so I am releasing it to the public domain.  But "public domain" does not have an internationally agreed upon definition, so I use CC0:

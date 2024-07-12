@@ -4,15 +4,15 @@ Also calculates time differences.
 Intended for shell script logging.
 
 <!-- mdtoc-start -->
-&DoubleRightArrow; [techo](#techo)  
-&nbsp;&nbsp;&DoubleRightArrow; [License](#license)  
-&nbsp;&nbsp;&DoubleRightArrow; [Introduction](#introduction)  
-&nbsp;&nbsp;&DoubleRightArrow; [Usage](#usage)  
-&nbsp;&nbsp;&DoubleRightArrow; [Regular Mode](#regular-mode)  
-&nbsp;&nbsp;&DoubleRightArrow; [Delta Mode](#delta-mode)  
-&nbsp;&nbsp;&DoubleRightArrow; [Building and Testing](#building-and-testing)  
-&nbsp;&nbsp;&DoubleRightArrow; [Why not date +"%N"?](#why-not-date-n)  
-<!-- TOC created by '../mdtoc/mdtoc.pl README.md' (see https://github.com/fordsfords/mdtoc) -->
+&bull; [techo](#techo)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [License](#license)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Introduction](#introduction)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Usage](#usage)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Regular Mode](#regular-mode)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Delta Mode](#delta-mode)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Building and Testing](#building-and-testing)  
+&nbsp;&nbsp;&nbsp;&nbsp;&bull; [Why not date +"%N"?](#why-not-date-n)  
+<!-- TOC created by '/home/sford/bin/mdtoc.pl README.md' (see https://github.com/fordsfords/mdtoc) -->
 <!-- mdtoc-end -->
 
 ## License

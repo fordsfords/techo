@@ -10,15 +10,7 @@ ASSRT() {
   fi
 }  # ASSRT
 
-
-# Update doc table of contents (see https://github.com/fordsfords/mdtoc).
-if which mdtoc.pl >/dev/null; then mdtoc.pl -b "" README.md;
-elif [ -x ../mdtoc/mdtoc.pl ]; then ../mdtoc/mdtoc.pl -b "" README.md;
-else echo "FYI: mdtoc.pl not found; see https://github.com/fordsfords/mdtoc"
-fi
-
-
-gcc -Wall -o techo techo.c ; ASSRT "$? -eq 0"
+./bld.sh ; ASSRT "$? -eq 0"
 
 ./techo -h >tst.x ; ASSRT "$? -eq 0"
 egrep "^[Ww]here:" tst.x >/dev/null ; ASSRT "$? -eq 0"
